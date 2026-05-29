@@ -16,7 +16,7 @@ jobs:
         platform: [Win32, x64]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.1
@@ -34,7 +34,7 @@ jobs:
         Get-ChildItem -Recurse -Include "*.exe","*.dll","*.sys" ${{env.GITHUB_WORKSPACE}}
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build-${{matrix.configuration}}-${{matrix.platform}}
         path: |
@@ -45,3 +45,4 @@ jobs:
           **/Release/**/*.dll
           **/Release/**/*.sys
         if-no-files-found: ignore
+        
