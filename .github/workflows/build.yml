@@ -1,0 +1,47 @@
+name: Build C++ Project
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+        platform: [Win32, x64]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Restore NuGet packages
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: nuget restore kernelmode.sln
+
+    - name: Build
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: msbuild /m /p:Configuration=${{matrix.configuration}} /p:Platform=${{matrix.platform}} kernelmode.sln
+
+    - name: List build artifacts
+      run: |
+        Get-ChildItem -Recurse -Include "*.exe","*.dll","*.sys" ${{env.GITHUB_WORKSPACE}}
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-${{matrix.configuration}}-${{matrix.platform}}
+        path: |
+          **/Debug/**/*.exe
+          **/Debug/**/*.dll
+          **/Debug/**/*.sys
+          **/Release/**/*.exe
+          **/Release/**/*.dll
+          **/Release/**/*.sys
+        if-no-files-found: ignore
