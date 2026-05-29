@@ -10,27 +10,22 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        configuration: [Release]
-        platform: [x64]
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Install Windows Driver Kit (WDK)
       run: |
-        # Download WDK installer
+        # Download WDK for Windows 11
         $WdkUrl = "https://go.microsoft.com/fwlink/?linkid=2196230"
         $WdkInstaller = "$env:TEMP\wdksetup.exe"
-        Invoke-WebRequest -Uri $WdkUrl -OutFile $WdkInstaller
+        Write-Host "Downloading WDK..."
+        Invoke-WebRequest -Uri $WdkUrl -OutFile $WdkInstaller -ErrorAction Stop
         
         # Install WDK silently
-        Start-Process -FilePath $WdkInstaller -ArgumentList "/q" -Wait
-        
-        # Add WDK to PATH
-        $WdkPath = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64"
-        echo "WDK_PATH=$WdkPath" >> $env:GITHUB_ENV
+        Write-Host "Installing WDK..."
+        & $WdkInstaller /q /norestart
+        Start-Sleep -Seconds 60
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.1
@@ -39,9 +34,9 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: nuget restore kernelmode.sln
 
-    - name: Build
+    - name: Build Release|x64
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /m /p:Configuration=${{matrix.configuration}} /p:Platform=${{matrix.platform}} kernelmode.sln
+      run: msbuild /m /p:Configuration=Release /p:Platform=x64 kernelmode.sln
 
     - name: List build artifacts
       run: |
@@ -50,13 +45,9 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: build-${{matrix.configuration}}-${{matrix.platform}}
+        name: build-Release-x64
         path: |
-          **/Debug/**/*.exe
-          **/Debug/**/*.dll
-          **/Debug/**/*.sys
           **/Release/**/*.exe
           **/Release/**/*.dll
           **/Release/**/*.sys
         if-no-files-found: ignore
-        
