@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="loader.cpp" />
-    <ClCompile Include="moderninjector.cpp" />
+    <ClCompile Include="modern_injector.cpp" />
     <ClCompile Include="test_client.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
