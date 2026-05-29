@@ -16,8 +16,7 @@ jobs:
 
     - name: Install WDK via Chocolatey
       run: |
-        choco install windows-driver-kit -y --version=2022.0.22621
-        choco install windows-driver-kit-vsix -y --version=2022.0.22621
+        choco install windowsdriverkit10 -y
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.1
