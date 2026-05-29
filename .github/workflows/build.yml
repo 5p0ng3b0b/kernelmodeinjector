@@ -18,6 +18,13 @@ jobs:
       run: |
         choco install windowsdriverkit10 -y
 
+    - name: Set WDK Environment Variables
+      run: |
+        $WdkPath = "C:\Program Files (x86)\Windows Kits\10"
+        $WdkVersion = "10.0.22621.0"
+        echo "INCLUDE=$WdkPath\Include\$WdkVersion\km;$WdkPath\Include\$WdkVersion\shared;$env:INCLUDE" >> $env:GITHUB_ENV
+        echo "LIB=$WdkPath\Lib\$WdkVersion\km\x64;$env:LIB" >> $env:GITHUB_ENV
+
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.1
 
