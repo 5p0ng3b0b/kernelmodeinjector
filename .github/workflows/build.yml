@@ -40,6 +40,10 @@ jobs:
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.1
+      with:
+      msbuild-architecture: x64
+      env:
+      WDK_PATH: C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64
 
     - name: Restore NuGet packages
       working-directory: ${{env.GITHUB_WORKSPACE}}
